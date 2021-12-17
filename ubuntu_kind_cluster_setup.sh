@@ -56,11 +56,6 @@ sudo apt-get -y install git > "git_$(date +"%F %T").log"
 
 # Install Jenkins
 {
-  helm repo add jenkinsci https://charts.jenkins.io
-  helm repo update
-  helm search repo jenkinsci
-  sudo mkdir /data
-  sudo mkdir /data/jenkins-volume
-  sudo kubectl apply --filename https://raw.githubusercontent.com/jenkins-infra/jenkins.io/master/content/doc/tutorials/kubernetes/installing-jenkins-on-kubernetes/jenkins-volume.yaml
-  sudo kubectl apply --filename https://raw.githubusercontent.com/jenkins-infra/jenkins.io/master/content/doc/tutorials/kubernetes/installing-jenkins-on-kubernetes/jenkins-sa.yaml
+  docker network create jenkins
+  docker run --name jenkins-docker --rm --detach --privileged --network jenkins --network-alias docker --env DOCKER_TLS_CERTDIR=/certs --volume jenkins-docker-certs:/certs/client --volume jenkins-data:/var/jenkins_home --publish 2376:2376 docker:dind --storage-driver overlay2
 } >> "jenkins_$(date +"%F %T").log"
